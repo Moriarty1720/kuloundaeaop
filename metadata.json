@@ -1,0 +1,9 @@
+{
+  "name": "Remix: KULONDA – ENCONTRA-ANGOLA",
+  "description": "Plataforma humanitária governamental para localização de pessoas desaparecidas em Angola.",
+  "requestFramePermissions": [
+    "geolocation",
+    "camera",
+    "notifications"
+  ]
+}
