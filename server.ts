@@ -40,6 +40,8 @@ db.exec(`
     foto_principal TEXT NOT NULL,
     data_desaparecimento TEXT NOT NULL,
     local_desaparecimento TEXT NOT NULL,
+    latitude_desaparecimento REAL,
+    longitude_desaparecimento REAL,
     provincia TEXT NOT NULL,
     municipio TEXT NOT NULL,
     circunstancias TEXT NOT NULL,
@@ -72,8 +74,8 @@ if (userCount.count === 0) {
   const userId = db.prepare("INSERT INTO usuarios (nome, email, senha, tipo, provincia) VALUES (?, ?, ?, ?, ?)").run("Maria Santos", "maria@email.com", hashedUser, "familia", "Luanda").lastInsertRowid;
 
   db.prepare(`
-    INSERT INTO desaparecidos (usuario_id, nome_completo, data_nascimento, genero, cor_pele, foto_principal, data_desaparecimento, local_desaparecimento, provincia, municipio, circunstancias, contacto_emergencia)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO desaparecidos (usuario_id, nome_completo, data_nascimento, genero, cor_pele, foto_principal, data_desaparecimento, local_desaparecimento, latitude_desaparecimento, longitude_desaparecimento, provincia, municipio, circunstancias, contacto_emergencia)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     userId, 
     "António Manuel", 
@@ -83,10 +85,32 @@ if (userCount.count === 0) {
     "https://picsum.photos/seed/child1/400/500", 
     "2024-02-20 14:30:00", 
     "Mercado do Roque Santeiro", 
+    -8.8089, 
+    13.2567,
     "Luanda", 
     "Sambizanga", 
     "Desapareceu enquanto a mãe fazia compras.", 
     "923-000-000"
+  );
+
+  db.prepare(`
+    INSERT INTO desaparecidos (usuario_id, nome_completo, data_nascimento, genero, cor_pele, foto_principal, data_desaparecimento, local_desaparecimento, latitude_desaparecimento, longitude_desaparecimento, provincia, municipio, circunstancias, contacto_emergencia)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    userId, 
+    "Helena Vunge", 
+    "2002-11-15", 
+    "feminino", 
+    "Mestiça", 
+    "https://picsum.photos/seed/girl1/400/500", 
+    "2024-03-01 18:00:00", 
+    "Ilha de Luanda", 
+    -8.7945, 
+    13.2234,
+    "Luanda", 
+    "Ingombota", 
+    "Vista pela última vez na zona dos restaurantes da Ilha.", 
+    "931-111-222"
   );
 }
 
@@ -146,12 +170,12 @@ async function startServer() {
   });
 
   app.post("/api/casos", authenticateToken, (req: any, res) => {
-    const { nome_completo, data_nascimento, genero, cor_pele, foto_principal, data_desaparecimento, local_desaparecimento, provincia, municipio, circunstancias, contacto_emergencia } = req.body;
+    const { nome_completo, data_nascimento, genero, cor_pele, foto_principal, data_desaparecimento, local_desaparecimento, latitude_desaparecimento, longitude_desaparecimento, provincia, municipio, circunstancias, contacto_emergencia } = req.body;
     const stmt = db.prepare(`
-      INSERT INTO desaparecidos (usuario_id, nome_completo, data_nascimento, genero, cor_pele, foto_principal, data_desaparecimento, local_desaparecimento, provincia, municipio, circunstancias, contacto_emergencia)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO desaparecidos (usuario_id, nome_completo, data_nascimento, genero, cor_pele, foto_principal, data_desaparecimento, local_desaparecimento, latitude_desaparecimento, longitude_desaparecimento, provincia, municipio, circunstancias, contacto_emergencia)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-    const info = stmt.run(req.user.id, nome_completo, data_nascimento, genero, cor_pele, foto_principal, data_desaparecimento, local_desaparecimento, provincia, municipio, circunstancias, contacto_emergencia);
+    const info = stmt.run(req.user.id, nome_completo, data_nascimento, genero, cor_pele, foto_principal, data_desaparecimento, local_desaparecimento, latitude_desaparecimento, longitude_desaparecimento, provincia, municipio, circunstancias, contacto_emergencia);
     res.status(201).json({ id: info.lastInsertRowid });
   });
 
